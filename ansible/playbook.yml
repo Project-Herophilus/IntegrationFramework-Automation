@@ -1,0 +1,64 @@
+- hosts: localhost
+  name: Install iDaaS Components
+  vars:
+    demo_delete: false
+    demo_project: idaas
+    demo_project_description: Namespace for iDaaS Connect components
+    cicd_project: idaas-cicd
+    grafana_project: idaas-grafana
+    grafana_project_name: iDaaS Grafana
+    grafana_user: root
+    grafana_password: secret
+    insecure_skip_tls_verify: true
+    enable_logging: true
+    enable_user_workload_monitoring: true
+    delete_demo: false
+    argo_admin_user: opentlc-mgr
+    idaas_connect_git: https://github.com/Project-Herophilus/iDaaS-Connect.git
+    idaas_connect_gitops_git: https://github.com/Project-Herophilus/idaas-connect-gitops.git
+    image_registry_url: quay.io/redhathealthcare
+    enable_pipelines: true
+    idaas_connect_components:
+      - hl7
+  tasks:
+
+    - name: Check Parameters
+      fail: msg="This play requires 'server' and 'token' to be defined"
+      when:
+        - server is not defined
+        - token is not defined
+
+    - name: Define domain
+      set_fact:
+        domain : "{{ server | regex_replace('https://api.') | regex_replace(':6443') }}"
+
+    - name: Evaluate {{ demo_project }} Namespace
+      k8s:
+        api_key: '{{ token }}'
+        host: '{{ server }}'
+        validate_certs: no
+        state: present
+        kind: Project
+        api_version: project.openshift.io/v1
+        definition:
+          metadata:
+            name: "{{ demo_project }}"
+            annotations:
+              openshift.io/description: "{{ demo_project_description }}"
+              openshift.io/display-name: "{{ demo_project }}"
+
+    - name: Include Logging role
+      include_role:
+        name: logging
+
+    - name: Include Monitoring role
+      include_role:
+        name: monitoring
+
+    - name: Include ArgoCD role
+      include_role:
+        name: argocd
+
+    - name: Include Tekton role
+      include_role:
+        name: tekton

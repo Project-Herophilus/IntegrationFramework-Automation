@@ -1,0 +1,112 @@
+- name: Evaluate {{ cicd_project }} project
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    kind: Project
+    api_version: project.openshift.io/v1
+    definition:
+      metadata:
+        name: "{{ cicd_project }}"
+        annotations:
+          openshift.io/description: ""
+          openshift.io/display-name: ""
+
+- name: Evalute Pipeline ServiceAccount Permissions
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    api_version: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    definition:
+      metadata:
+        name: pipeline-edit
+        namespace: '{{ demo_project }}'
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: edit
+      subjects:
+      - kind: ServiceAccount
+        name: pipeline
+        namespace: '{{ cicd_project }}'
+
+- name: Evaluate quay-secret
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'secret_quay.yml.j2') }}"
+
+- name: Evaluate ArgoCD Secret for Pipelines
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    kind: Secret
+    api_version: v1
+    definition:
+      metadata:
+        name: argocd-env-secret
+        namespace: '{{ cicd_project }}'
+      stringData:
+        ARGOCD_USERNAME: admin
+        ARGOCD_PASSWORD: '{{ argo_password }}'
+        ARGOCD_SERVER: openshift-gitops-server.openshift-gitops
+      type: Opaque
+
+- name: Evaluate PVCs
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'tekton_pvcs.yml.j2') }}"
+
+- name: Evaluate buildah Task
+  retries: 5
+  delay: 20
+  register: result
+  until:
+    - result.failed == false
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'tekton_task_buildah.yml.j2') }}"
+
+- name: Evaluate maven-version Task
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'tekton_task_maven_version.yml.j2') }}"
+
+- name: Evaluate argo-sync Task
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'tekton_task_argo.yml.j2') }}"
+
+- name: Evaluate iDaaS Connect Pipelines
+  retries: 5
+  delay: 10
+  register: result
+  until:
+    - result.failed == false
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'tekton_pipeline.yml.j2') }}"
+  loop: '{{ idaas_connect_components }}'

@@ -1,0 +1,105 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: idaas-connect-{{ item }}
+  labels:
+    app: '{{ item }}'
+  namespace: '{{ cicd_project }}'
+spec:
+  params:
+    - default: latest
+      description: Image Tag Value
+      name: IMAGE_TAG
+      type: string
+    - default: '{{ image_registry_url }}/idaas-connect-{{ item }}'
+      name: IMAGE_REGISTRY
+      type: string
+    - default: main
+      description: Select Branch
+      name: BRANCH_NAME
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: '{{ idaas_connect_git }}'
+        - name: subdirectory
+          value: ''
+        - name: deleteExisting
+          value: 'true'
+        - name: revision
+          value: $(params.BRANCH_NAME)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    - name: maven-build
+      params:
+        - name: CONTEXT_DIR
+          value: ./{{ item }}
+        - name: GOALS
+          value:
+            - '-DskipTests'
+            - -Dmaven.repo.local=$(workspaces.maven-settings.path)
+            - clean
+            - package
+      runAfter:
+        - fetch-repository
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+
+    - name: maven-version
+      params:
+        - name: CONTEXT_DIR
+          value: ./{{ item }}
+      runAfter:
+        - maven-build
+      taskRef:
+        kind: Task
+        name: maven-version
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+
+    - name: build-push-image
+      params:
+        - name: CONTEXT
+          value: ./{{ item }}
+        - name: DOCKERFILE
+          value: docker/Dockerfile.jvm
+        - name: IMAGE
+          value: '$(params.IMAGE_REGISTRY):$(tasks.maven-version.results.version)'
+        - name: TLSVERIFY
+          value: 'true'
+      runAfter:
+        - maven-version
+      taskRef:
+        kind: Task
+        name: buildah-build-push
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    - name: sync-application
+      taskRef:
+        name: argocd-sync-and-wait
+      runAfter:
+        - build-push-image
+      params:
+        - name: application-name
+          value: idaas-connect-{{ item }}
+        - name: flags
+          value: --insecure
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings

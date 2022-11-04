@@ -1,0 +1,21 @@
+= iDaaS Infra Automation
+:toc:
+:toc-placement!:
+
+Automation to deploy the Red Hat Integration Demo.
+
+toc::[]
+
+== Example Use Case
+
+
+
+=== Deploying the demo
+
+Export `token` and `server` as environment variable, then run under the `ansible` folder:
+
+    ansible-playbook -e token=${token} -e server=${server} -e docker_config=${DOCKER_CONFIG} playbook.yml
+
+=== Deleting the demo
+
+    ansible-playbook -e token=${token} -e server=${server}  -e delete_demo=true playbook.yml
