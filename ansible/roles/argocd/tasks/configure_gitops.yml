@@ -33,8 +33,20 @@
         name: openshift-gitops-argocd-application-controller
         namespace: openshift-gitops
 
+- name: Evaluate GitOps Project
+  retries: 5
+  delay: 20
+  register: result
+  until:
+    - result.failed == false
+  k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
+    state: present
+    resource_definition: "{{ lookup('template', 'argo_project.yml.j2') }}"
 
-- name: Evaluate GitOps Applications
+- name: Evaluate GitOps Application
   retries: 5
   delay: 20
   register: result
@@ -46,7 +58,7 @@
     validate_certs: no
     state: present
     resource_definition: "{{ lookup('template', 'argo_app.yml.j2') }}"
-  loop: '{{ idaas_connect_components }}'
+  loop: '{{ idaas_connect_components }}'  
 
 - name: Get openshift-gitops-cluster Secret
   k8s_info:
@@ -60,6 +72,7 @@
   register: r_gitops_secret
   until:
     - r_gitops_secret.resources is defined
+    - r_gitops_secret.resources[0].data['admin.password'] is defined
   retries: 10
   delay: 15
 
