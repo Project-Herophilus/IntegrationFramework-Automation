@@ -1,8 +1,8 @@
-= iDaaS Automation
+= iDaaS Connect Automation
 :toc:
 :toc-placement!:
 
-Automation to deploy the required middleware and operations tools required by iDaaS Connect
+Automation to deploy the required middleware and operations tools required by iDaaS Connect.
 
 toc::[]
 
@@ -56,7 +56,7 @@ following values as command-line properties
 | token         | sha256~vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ | Access token of an user with cluster-admin privileges
 | server        | https://api.mycluster.opentlc.com:6443             | OpenShift cluster API URL
 | docker_config | vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ        | Access token used to connect with Quay
-
+|=======================
 
 === Deploying the Environment
 

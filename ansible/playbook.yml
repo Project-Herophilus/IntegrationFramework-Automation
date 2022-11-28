@@ -1,5 +1,5 @@
 - hosts: localhost
-  name: Install iDaaS Components
+  name: Deploy iDaaS Connect
   vars:
     demo_delete: false
     demo_project: idaas
@@ -23,10 +23,11 @@
   tasks:
 
     - name: Check Parameters
-      fail: msg="This play requires 'server' and 'token' to be defined"
+      fail: msg="This play requires 'server', 'token' and 'docker_config' to be defined"
       when:
         - server is not defined
         - token is not defined
+        - docker_config is not defined
 
     - name: Define domain
       set_fact:
@@ -65,4 +66,4 @@
 
     - name: Include AMQ Streams role
       include_role:
-        name: streams        
+        name: streams

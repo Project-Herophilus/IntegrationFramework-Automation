@@ -4,6 +4,7 @@
     host: '{{ server }}'
     validate_certs: no
     state: present
+    namespace: '{{ demo_project }}'
     resource_definition: "{{ lookup('template', item ) }}"
   loop:
     - prometheus_service_monitor.yml.j2
@@ -71,6 +72,9 @@
 
 - name: Evaluate Kafka Dashboard
   k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: no
     state: present
     namespace: '{{ demo_project}}'
     resource_definition: "{{ lookup('file', 'grafana_kafka_dashboard.yml') }}"
