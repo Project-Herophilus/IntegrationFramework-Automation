@@ -62,3 +62,7 @@
     - name: Include Tekton role
       include_role:
         name: tekton
+
+    - name: Include AMQ Streams role
+      include_role:
+        name: streams        

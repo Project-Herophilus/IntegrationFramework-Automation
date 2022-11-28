@@ -1,21 +1,67 @@
-= iDaaS Infra Automation
+= iDaaS Automation
 :toc:
 :toc-placement!:
 
-Automation to deploy the Red Hat Integration Demo.
+Automation to deploy the required middleware and operations tools required by iDaaS Connect
 
 toc::[]
 
-== Example Use Case
+== Automation Requirements
+
+=== Ansible
+
+You need to have Ansible and the Kubernetes module installed in your machine in order to run this playbook.
+
+* https://www.ansible.com/[Ansible 3]
+- https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#control-node-requirements[Ansible's requirement]
+* https://pypi.org/project/kubernetes/[Python's Kubernetes module]
+
+=== Resource Consumption per User
+
+[NOTE]
+====
+TBD
+====
+
+Take the above resource consumption as a base to calculate the amount of resource you will need for your workshop.
+
+=== OpenShift 4.10
+
+This workshops requires an OpenShift environment. You will also need an OpenShift user with cluster-admin privileges.
+
+[NOTE]
+====
+This automation is specifically tested with OCP 4.10. Older or newer versions may have API incompatibilities that will break the automation.
+====
+
+== Tools available
+
+* OpenShift User Workload Monitoring
+* AMQ Streams Operator
+* Grafana Operator
+* OpenShift GitOps
+* OpenShift Pipelines
+* OpenShift Logging
+
+== How to Use the Automation
+
+=== Command-line Required Parameters
+
+You can change the value of variables defined in the roles and playbook as you like, to customize your deployment, but in order to access your OpenShift cluster you need to pass the
+following values as command-line properties
+
+[options="header"]
+|=======================
+| Parameter     | Example Value                                      | Definition
+| token         | sha256~vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ | Access token of an user with cluster-admin privileges
+| server        | https://api.mycluster.opentlc.com:6443             | OpenShift cluster API URL
+| docker_config | vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ        | Access token used to connect with Quay
 
 
+=== Deploying the Environment
 
-=== Deploying the demo
+Export `token`, `server` and `docker_config` as environment variable, then run the following command under the `ansible` folder:
 
-Export `token` and `server` as environment variable, then run under the `ansible` folder:
-
-    ansible-playbook -e token=${token} -e server=${server} -e docker_config=${DOCKER_CONFIG} playbook.yml
-
-=== Deleting the demo
-
-    ansible-playbook -e token=${token} -e server=${server}  -e delete_demo=true playbook.yml
+----
+ansible-playbook -e token=${token} -e server=${server} -e docker_config=${docker_config} playbook.yml
+----
