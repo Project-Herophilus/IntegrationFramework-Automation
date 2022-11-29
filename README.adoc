@@ -55,7 +55,7 @@ following values as command-line properties
 | Parameter        | Example Value                                      | Definition
 | token            | sha256~vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ | Access token of an user with cluster-admin privileges
 | server           | https://api.mycluster.opentlc.com:6443             | OpenShift cluster API URL
-| dockerconfigjson | vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ        | `.dockerconfigjson` encoded value present in a secret for registry access. It's used to connect with Quay. It is recommend to use a robot account with limited read/write permissions.
+| docker_config    | vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ        | `.dockerconfigjson` encoded value present in a secret for registry access. It's used to connect with Quay. It is recommend to use a robot account with limited read/write permissions.
 |=======================
 
 === Deploying the Environment
@@ -63,5 +63,5 @@ following values as command-line properties
 Export `token`, `server` and `docker_config` as environment variable, then run the following command under the `ansible` folder:
 
 ----
-ansible-playbook -e token=${token} -e server=${server} -e docker_config=${dockerconfigjson} playbook.yml
+ansible-playbook -e token=${token} -e server=${server} -e docker_config=${docker_config} playbook.yml
 ----
