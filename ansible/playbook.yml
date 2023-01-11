@@ -20,6 +20,7 @@
     enable_pipelines: true
     idaas_connect_components:
       - hl7
+      - fhir
   tasks:
 
     - name: Check Parameters
