@@ -21,6 +21,7 @@
     idaas_connect_components:
       - hl7
       - fhir
+      - edi
   tasks:
 
     - name: Check Parameters
