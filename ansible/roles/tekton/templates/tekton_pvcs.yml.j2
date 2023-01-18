@@ -9,8 +9,8 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 3Gi
-  storageClassName: gp2
+      storage: '{{ tekton_maven_storage_size }}'
+  storageClassName: '{{ tekton_storage_class }}'
   volumeMode: Filesystem
 ---
 kind: PersistentVolumeClaim
@@ -23,6 +23,6 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: gp2
+      storage: '{{ tekton_shared_workspace_storage_size }}'
+  storageClassName: '{{ tekton_storage_class }}'
   volumeMode: Filesystem

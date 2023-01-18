@@ -31,7 +31,7 @@
         - token is not defined
         - docker_config is not defined
 
-    - name: Define domain
+    - name: Set domain
       set_fact:
         domain : "{{ server | regex_replace('https://api.') | regex_replace(':6443') }}"
 
