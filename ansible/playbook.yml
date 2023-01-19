@@ -27,9 +27,7 @@
     - name: Check Parameters
       fail: msg="This play requires 'server', 'token' and 'docker_config' to be defined"
       when:
-        - server is not defined
-        - token is not defined
-        - docker_config is not defined
+        - (server is not defined) or (token is not defined) or (docker_config is not defined) or (server | length == 0) or (token | length == 0) or (docker_config | length == 0)
 
     - name: Set domain
       set_fact:
