@@ -1,2 +1,2 @@
 cluster_logging_storage_class: gp2
-cluster_logging_storage_size: 50G
+cluster_logging_storage_size: 10G

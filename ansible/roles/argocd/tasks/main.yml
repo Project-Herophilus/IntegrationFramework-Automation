@@ -2,7 +2,7 @@
   ansible.builtin.include_tasks: provision_gitops.yml
   when: not delete_demo
 
-- name: Configure RHI Demo GitOps
+- name: Configure GitOps
   ansible.builtin.include_tasks: configure_gitops.yml
   when: not delete_demo
 

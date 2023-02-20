@@ -6,9 +6,9 @@ Automation to deploy the required middleware and operations tools required by iD
 
 toc::[]
 
-== Automation Requirements
+== Requirements
 
-=== Ansible
+=== Ansible Automation
 
 You need to have Ansible and the Kubernetes module installed in your machine in order to run this playbook.
 
@@ -16,22 +16,39 @@ You need to have Ansible and the Kubernetes module installed in your machine in 
 - https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#control-node-requirements[Ansible's requirement]
 * https://pypi.org/project/kubernetes/[Python's Kubernetes module]
 
-=== Resource Consumption per User
-
-[NOTE]
-====
-TBD
-====
-
-Take the above resource consumption as a base to calculate the amount of resource you will need for your workshop.
-
 === OpenShift
 
-This workshops requires an OpenShift environment. You will also need an OpenShift user with cluster-admin privileges.
+This deployment requires an OpenShift environment. You will also need an OpenShift user with `cluster-admin` privileges.
 
 [NOTE]
 ====
 This automation was specifically tested with OCP 4.10. Older or newer versions may have API incompatibilities or different Operator Catalog that will break the automation.
+====
+
+=== Resource Consumption
+
+Most of the components deployed use bare minimum resources or do not force resource requirements. Those can be adjusted by changing parameters or templates used. 
+
+==== Storage
+
+Some components require RWO volumes to work properly. Here are the default values.
+
+[options="header"]
+|=======================
+| Component             | Default Value | Comment
+| Logging               | 10Gi          |
+| Kafka                 | 9Gi           | 3Gi per replica
+| Zookeeper             | 9Gi           | 3Gi per replica 
+| Tekton Shared Storage | 4Gi           |
+|                       |               |
+| Total                 | 32Gi          |
+|=======================
+
+==== CPU and Memory limits
+
+[NOTE]
+====
+TBD
 ====
 
 == Tools available
@@ -47,8 +64,8 @@ This automation was specifically tested with OCP 4.10. Older or newer versions m
 
 === Command-line Required Parameters
 
-You can change the value of variables defined in the roles and playbook as you like, to customize your deployment, but in order to access your OpenShift cluster you need to pass the
-following values as command-line properties
+You can change the value of variables defined in the roles and playbook as you like to customize your deployment, but in order to access your OpenShift cluster, you need to pass the
+following required values as command-line properties
 
 [options="header"]
 |=======================

@@ -22,6 +22,3 @@
     definition:
       metadata:
         name: "{{ grafana_project }}"
-        annotations:
-          openshift.io/description: "Project for monitoring dashboard"
-          openshift.io/display-name: "RHI Demo Grafana"
