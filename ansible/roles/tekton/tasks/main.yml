@@ -1,15 +1,15 @@
 - name: Provision Pipelines
-  include_tasks: provision_pipelines.yml
+  ansible.builtin.include_tasks: provision_pipelines.yml
   when:
     - enable_pipelines
     - not delete_demo
 
 - name: Configure RHI Demo Pipelines
-  include_tasks: configure_pipelines.yml
+  ansible.builtin.include_tasks: configure_pipelines.yml
   when:
     - enable_pipelines
     - not delete_demo
 
 - name: Delete Pipeline
-  include_tasks: delete_pipeline.yml
+  ansible.builtin.include_tasks: delete_pipeline.yml
   when: delete_demo | bool

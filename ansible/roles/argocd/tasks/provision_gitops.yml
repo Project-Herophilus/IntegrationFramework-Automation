@@ -1,8 +1,8 @@
 - name: Evaluate OpenShift GitOps Subscription
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     kind: Subscription
     api_version: operators.coreos.com/v1alpha1
@@ -18,10 +18,10 @@
         sourceNamespace: openshift-marketplace
 
 - name: Wait Gitops Operator
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     api_version: v1
     kind: Pod
     namespace: openshift-operators

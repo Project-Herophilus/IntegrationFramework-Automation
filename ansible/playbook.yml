@@ -1,5 +1,5 @@
-- hosts: localhost
-  name: Deploy iDaaS Connect
+- name: Deploy iDaaS Connect
+  hosts: localhost
   vars:
     demo_delete: false
     demo_project: idaas
@@ -25,22 +25,24 @@
   tasks:
 
     - name: Check Parameters
-      fail: msg="This play requires 'server', 'token' and 'docker_config' to be defined"
-      when:
-        - (server is not defined) or (token is not defined) or (docker_config is not defined) or (server | length == 0) or (token | length == 0) or (docker_config | length == 0)
+      ansible.builtin.fail:
+        msg: "This play requires 'server', 'token' and 'docker_config' to be defined"
+      when: >-
+       (server is undefined) or (token is undefined) or (docker_config is undefined) or
+       (server | length == 0) or (token | length == 0) or (docker_config | length == 0)
 
     - name: Set domain
-      set_fact:
-        domain : "{{ server | regex_replace('https://api.') | regex_replace(':6443') }}"
+      ansible.builtin.set_fact:
+        domain: "{{ server | regex_replace('https://api.') | regex_replace(':6443') }}"
 
-    - name: Evaluate {{ demo_project }} Namespace
-      k8s:
+    - name: Evaluate Namespace {{ demo_project }}
+      kubernetes.core.k8s:
         api_key: '{{ token }}'
         host: '{{ server }}'
-        validate_certs: no
+        validate_certs: false
         state: present
-        kind: Project
-        api_version: project.openshift.io/v1
+        kind: Namespace
+        api_version: v1
         definition:
           metadata:
             name: "{{ demo_project }}"
@@ -49,21 +51,21 @@
               openshift.io/display-name: "{{ demo_project }}"
 
     - name: Include Logging role
-      include_role:
+      ansible.builtin.include_role:
         name: logging
 
     - name: Include Monitoring role
-      include_role:
+      ansible.builtin.include_role:
         name: monitoring
 
     - name: Include ArgoCD role
-      include_role:
+      ansible.builtin.include_role:
         name: argocd
 
     - name: Include Tekton role
-      include_role:
+      ansible.builtin.include_role:
         name: tekton
 
     - name: Include AMQ Streams role
-      include_role:
+      ansible.builtin.include_role:
         name: streams

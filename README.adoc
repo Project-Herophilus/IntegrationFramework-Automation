@@ -25,13 +25,13 @@ TBD
 
 Take the above resource consumption as a base to calculate the amount of resource you will need for your workshop.
 
-=== OpenShift 4.10
+=== OpenShift
 
 This workshops requires an OpenShift environment. You will also need an OpenShift user with cluster-admin privileges.
 
 [NOTE]
 ====
-This automation is specifically tested with OCP 4.10. Older or newer versions may have API incompatibilities that will break the automation.
+This automation was specifically tested with OCP 4.10. Older or newer versions may have API incompatibilities or different Operator Catalog that will break the automation.
 ====
 
 == Tools available

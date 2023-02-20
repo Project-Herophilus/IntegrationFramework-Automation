@@ -1,8 +1,8 @@
-- name: Evaluate {{ cicd_project }} project
-  k8s:
+- name: Evaluate project {{ cicd_project }}
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     kind: Project
     api_version: project.openshift.io/v1
@@ -14,10 +14,10 @@
           openshift.io/display-name: ""
 
 - name: Evalute Pipeline ServiceAccount Permissions
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     api_version: rbac.authorization.k8s.io/v1
     kind: RoleBinding
@@ -30,23 +30,23 @@
         kind: ClusterRole
         name: edit
       subjects:
-      - kind: ServiceAccount
-        name: pipeline
-        namespace: '{{ cicd_project }}'
+        - kind: ServiceAccount
+          name: pipeline
+          namespace: '{{ cicd_project }}'
 
 - name: Evaluate quay-secret
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'secret_quay.yml.j2') }}"
 
 - name: Evaluate ArgoCD Secret for Pipelines
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     kind: Secret
     api_version: v1
@@ -61,10 +61,10 @@
       type: Opaque
 
 - name: Evaluate PVCs
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'tekton_pvcs.yml.j2') }}"
 
@@ -74,26 +74,26 @@
   register: result
   until:
     - result.failed == false
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'tekton_task_buildah.yml.j2') }}"
 
 - name: Evaluate maven-version Task
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'tekton_task_maven_version.yml.j2') }}"
 
 - name: Evaluate argo-sync Task
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'tekton_task_argo.yml.j2') }}"
 
@@ -103,10 +103,10 @@
   register: result
   until:
     - result.failed == false
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'tekton_pipeline.yml.j2') }}"
   loop: '{{ idaas_connect_components }}'

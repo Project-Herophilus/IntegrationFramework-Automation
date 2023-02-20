@@ -1,8 +1,8 @@
 - name: Evaluate User Workload Monitoring
-  k8s:
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: absent
     kind: ConfigMap
     api_version: v1
@@ -11,11 +11,11 @@
         name: cluster-monitoring-config
         namespace: openshift-monitoring
 
-- name: Delete {{ grafana_project }} Namespace
-  k8s:
+- name: Delete Namespace {{ grafana_project }}
+  kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
-    validate_certs: no
+    validate_certs: false
     state: absent
     kind: Project
     api_version: project.openshift.io/v1
