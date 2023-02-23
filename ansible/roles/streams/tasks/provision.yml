@@ -1,4 +1,4 @@
-- name: Evaluate Namespace {{ demo_project }}
+- name: Evaluate Namespace {{ main_project }}
   kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
@@ -8,7 +8,7 @@
     api_version: project.openshift.io/v1
     definition:
       metadata:
-        name: "{{ demo_project }}"
+        name: "{{ main_project }}"
 
 - name: Evaluate Operator Group
   when: not delete_demo
@@ -21,11 +21,11 @@
     kind: OperatorGroup
     definition:
       metadata:
-        name: '{{ demo_project }}-operatorgroup'
-        namespace: '{{ demo_project }}'
+        name: '{{ main_project }}-operatorgroup'
+        namespace: '{{ main_project }}'
       spec:
         targetNamespaces:
-          - '{{ demo_project }}'
+          - '{{ main_project }}'
 
 - name: Evaluate AMQ Streams Operator
   kubernetes.core.k8s:
@@ -38,7 +38,7 @@
     definition:
       metadata:
         name: amq-streams
-        namespace: '{{ demo_project }}'
+        namespace: '{{ main_project }}'
       spec:
         channel: stable
         installPlanApproval: Automatic
@@ -53,7 +53,7 @@
     validate_certs: false
     api_version: v1
     kind: Pod
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     label_selectors:
       - rht.comp=AMQ_Streams
       - rht.subcomp=cluster-operator
@@ -70,7 +70,7 @@
     host: '{{ server }}'
     validate_certs: false
     state: present
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     resource_definition: "{{ lookup('file', 'metrics-cm.yml') }}"
 
 - name: Evaluate Cluster Instance
@@ -79,7 +79,7 @@
     host: '{{ server }}'
     validate_certs: false
     state: present
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     name: '{{ kafka_cluster_name }}'
     resource_definition: "{{ lookup('file', 'cluster.yml') }}"
 
@@ -90,11 +90,11 @@
     validate_certs: false
     api_version: kafka.strimzi.io/v1beta2
     kind: Kafka
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     name: '{{ kafka_cluster_name }}'
   register: r_kafka
   retries: 20
-  delay: 10
+  delay: 15
   until:
     - r_kafka.resources[0] is defined
     - r_kafka.resources[0].status is defined

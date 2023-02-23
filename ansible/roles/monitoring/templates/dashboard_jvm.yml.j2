@@ -4237,7 +4237,9 @@ spec:
             "name": "service",
             "options": [],
             "query": {
-              "query": "label_values(jvm_memory_used_bytes{namespace=\"idaas\"}, service)",
+{% endraw %}            
+              "query": "label_values(jvm_memory_used_bytes{namespace=\"{{ main_project }}\"}, service)",
+{% raw %}                 
               "refId": "StandardVariableQuery"
             },
             "refresh": 2,

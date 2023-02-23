@@ -154,8 +154,8 @@
         inputs:
           - application:
               namespaces:
-                - '{{ demo_project }}'
-            name: '{{ demo_project }}'
+                - '{{ main_project }}'
+            name: '{{ main_project }}'
         outputDefaults:
           elasticsearch:
             structuredTypeName: json-format

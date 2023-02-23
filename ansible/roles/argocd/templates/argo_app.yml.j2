@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: idaas-connect-{{ item }}
+  name: hdf-{{ item }}
   namespace: openshift-gitops
 spec:
   destination:
     name: ''
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     server: 'https://kubernetes.default.svc'
   source:
     path: '{{ item }}'
-    repoURL: '{{ idaas_connect_gitops_git }}'
+    repoURL: '{{ hdf_gitops_git }}'
     targetRevision: main
-  project: idaas-connect
+  project: hdf

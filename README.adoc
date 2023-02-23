@@ -1,8 +1,8 @@
-= iDaaS Connect Automation
+= HDF Automation
 :toc:
 :toc-placement!:
 
-Automation to deploy the required middleware and operations tools required by iDaaS Connect.
+Automation to deploy the required middleware and operations tools required by HDF.
 
 toc::[]
 

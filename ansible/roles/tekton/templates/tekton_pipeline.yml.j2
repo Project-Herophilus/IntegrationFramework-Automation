@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: idaas-connect-{{ item }}
+  name: hdf-{{ item }}
   labels:
     app: '{{ item }}'
   namespace: '{{ cicd_project }}'
@@ -11,7 +11,7 @@ spec:
       description: Image Tag Value
       name: IMAGE_TAG
       type: string
-    - default: '{{ image_registry_url }}/idaas-connect-{{ item }}'
+    - default: '{{ image_registry_url }}/hdf-{{ item }}'
       name: IMAGE_REGISTRY
       type: string
     - default: main
@@ -21,7 +21,7 @@ spec:
     - name: fetch-repository
       params:
         - name: url
-          value: '{{ idaas_connect_git }}'
+          value: '{{ hdf_git }}'
         - name: subdirectory
           value: ''
         - name: deleteExisting
@@ -92,12 +92,12 @@ spec:
 
     - name: sync-application
       taskRef:
-        name: argocd-sync-and-wait
+        name: argocd-sync
       runAfter:
         - build-push-image
       params:
         - name: application-name
-          value: idaas-connect-{{ item }}
+          value: hdf-{{ item }}
         - name: flags
           value: --insecure
   workspaces:
