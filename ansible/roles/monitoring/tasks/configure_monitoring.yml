@@ -4,7 +4,7 @@
     host: '{{ server }}'
     validate_certs: false
     state: present
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     resource_definition: "{{ lookup('template', item) }}"
   loop:
     - prometheus_service_monitor.yml.j2
@@ -93,5 +93,5 @@
     host: '{{ server }}'
     validate_certs: false
     state: present
-    namespace: '{{ demo_project }}'
+    namespace: '{{ main_project }}'
     resource_definition: "{{ lookup('file', 'grafana_kafka_dashboard.yml') }}"

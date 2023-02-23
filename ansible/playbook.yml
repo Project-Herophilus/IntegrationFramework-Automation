@@ -1,12 +1,12 @@
-- name: Deploy iDaaS Connect
+- name: Deploy Integration Framework HDF
   hosts: localhost
   vars:
     demo_delete: false
-    demo_project: idaas
-    demo_project_description: Namespace for iDaaS Connect components
-    cicd_project: idaas-cicd
-    grafana_project: idaas-grafana
-    grafana_project_name: iDaaS Grafana
+    main_project: hdf
+    main_project_description: Namespace for HDF Connect components
+    cicd_project: hdf-cicd
+    grafana_project: hdf-grafana
+    grafana_project_name: hdf Grafana
     grafana_user: root
     grafana_password: secret
     insecure_skip_tls_verify: true
@@ -14,16 +14,15 @@
     enable_user_workload_monitoring: true
     delete_demo: false
     argo_admin_user: opentlc-mgr
-    idaas_connect_git: https://github.com/Project-Herophilus/iDaaS-Connect.git
-    idaas_connect_gitops_git: https://github.com/Project-Herophilus/idaas-connect-gitops.git
+    hdf_git: https://github.com/Project-Herophilus/IntegrationFramework-HDF.git
+    hdf_gitops_git: https://github.com/Project-Herophilus/IntegrationFramework-gitops.git
     image_registry_url: quay.io/redhathealthcare
     enable_pipelines: true
-    idaas_connect_components:
+    hdf_components:
       - hl7
       - fhir
       - edi
   tasks:
-
     - name: Check Parameters
       ansible.builtin.fail:
         msg: "This play requires 'server', 'token' and 'docker_config' to be defined"
@@ -35,7 +34,7 @@
       ansible.builtin.set_fact:
         domain: "{{ server | regex_replace('https://api.') | regex_replace(':6443') }}"
 
-    - name: Evaluate Namespace {{ demo_project }}
+    - name: Evaluate Namespace {{ main_project }}
       kubernetes.core.k8s:
         api_key: '{{ token }}'
         host: '{{ server }}'
@@ -45,10 +44,10 @@
         api_version: v1
         definition:
           metadata:
-            name: "{{ demo_project }}"
+            name: "{{ main_project }}"
             annotations:
-              openshift.io/description: "{{ demo_project_description }}"
-              openshift.io/display-name: "{{ demo_project }}"
+              openshift.io/description: "{{ main_project_description }}"
+              openshift.io/display-name: "{{ main_project }}"
 
     - name: Include Logging role
       ansible.builtin.include_role:

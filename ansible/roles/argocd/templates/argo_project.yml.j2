@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: idaas-connect
+  name: hdf
   namespace: openshift-gitops
 spec:
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
   destinations:
-    - namespace: '{{ demo_project }}'
+    - namespace: '{{ main_project }}'
       server: '*'
   sourceRepos:
     - '*'

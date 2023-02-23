@@ -24,7 +24,7 @@
     definition:
       metadata:
         name: pipeline-edit
-        namespace: '{{ demo_project }}'
+        namespace: '{{ main_project }}'
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
@@ -68,7 +68,7 @@
     state: present
     resource_definition: "{{ lookup('template', 'tekton_pvcs.yml.j2') }}"
 
-- name: Evaluate buildah Task
+- name: Evaluate Tasks
   retries: 5
   delay: 20
   register: result
@@ -79,25 +79,13 @@
     host: '{{ server }}'
     validate_certs: false
     state: present
-    resource_definition: "{{ lookup('template', 'tekton_task_buildah.yml.j2') }}"
+    resource_definition: "{{ lookup('template', item) }}"
+  loop: 
+    - tekton_task_buildah.yml.j2
+    - tekton_task_maven_version.yml.j2
+    - tekton_task_argo_sync.yml.j2
 
-- name: Evaluate maven-version Task
-  kubernetes.core.k8s:
-    api_key: '{{ token }}'
-    host: '{{ server }}'
-    validate_certs: false
-    state: present
-    resource_definition: "{{ lookup('template', 'tekton_task_maven_version.yml.j2') }}"
-
-- name: Evaluate argo-sync Task
-  kubernetes.core.k8s:
-    api_key: '{{ token }}'
-    host: '{{ server }}'
-    validate_certs: false
-    state: present
-    resource_definition: "{{ lookup('template', 'tekton_task_argo.yml.j2') }}"
-
-- name: Evaluate iDaaS Connect Pipelines
+- name: Evaluate HDF Pipelines
   retries: 5
   delay: 10
   register: result
@@ -109,4 +97,4 @@
     validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'tekton_pipeline.yml.j2') }}"
-  loop: '{{ idaas_connect_components }}'
+  loop: '{{ hdf_components }}'

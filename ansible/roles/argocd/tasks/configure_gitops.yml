@@ -23,7 +23,7 @@
     definition:
       metadata:
         name: edit-0
-        namespace: '{{ demo_project }}'
+        namespace: '{{ main_project }}'
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
@@ -58,7 +58,7 @@
     validate_certs: false
     state: present
     resource_definition: "{{ lookup('template', 'argo_app.yml.j2') }}"
-  loop: '{{ idaas_connect_components }}'
+  loop: '{{ hdf_components }}'
 
 - name: Get openshift-gitops-cluster Secret
   kubernetes.core.k8s_info:
@@ -109,11 +109,11 @@
 
 - name: Sync Apps
   ansible.builtin.uri:
-    url: https://openshift-gitops-server-openshift-gitops.apps.{{ domain }}/api/v1/applications/idaas-connect-{{ item }}/sync
+    url: https://openshift-gitops-server-openshift-gitops.apps.{{ domain }}/api/v1/applications/hdf-{{ item }}/sync
     validate_certs: false
     method: POST
     headers:
       Authorization: Bearer {{ argo_token }}
     status_code: 200
   register: r_argo_token
-  loop: '{{ idaas_connect_components }}'
+  loop: '{{ hdf_components }}'
