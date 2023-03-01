@@ -22,7 +22,7 @@ This deployment requires an OpenShift environment. You will also need an OpenShi
 
 [NOTE]
 ====
-This automation was specifically tested with OCP 4.10. Older or newer versions may have API incompatibilities or different Operator Catalog that will break the automation.
+This automation was specifically tested with OCP 4.10 and 4.11. Older or newer versions may have API incompatibilities or different Operator Catalog that will break the automation.
 ====
 
 === Resource Consumption

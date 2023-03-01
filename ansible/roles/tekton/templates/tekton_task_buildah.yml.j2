@@ -13,7 +13,7 @@ spec:
     - description: Location of the repo where image has to be pushed
       name: IMAGE
       type: string
-    - default: registry.redhat.io/rhel8/buildah@sha256:99cae35f40c7ec050fed3765b2b27e0b8bbea2aa2da7c16408e2ca13c60ff8ee
+    - default: registry.redhat.io/rhel9/buildah:9.1
       description: The location of the buildah builder image.
       name: BUILDER_IMAGE
       type: string
@@ -43,6 +43,9 @@ spec:
       image: $(params.BUILDER_IMAGE)
       name: build
       resources: {}
+      securityContext:
+        capabilities:
+          add: ["SETFCAP"]
       volumeMounts:
         - mountPath: /var/lib/containers
           name: varlibcontainers
@@ -59,6 +62,9 @@ spec:
       image: $(params.BUILDER_IMAGE)
       name: push
       resources: {}
+      securityContext:
+        capabilities:
+          add: ["SETFCAP"]
       volumeMounts:
         - mountPath: /etc/secret-volume
           name: quay-secret
@@ -69,14 +75,13 @@ spec:
       name: digest-to-results
       resources: {}
       script: >-
-        cat $(workspaces.source.path)/image-digest | tee
-        /tekton/results/IMAGE_DIGEST
+        cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
   volumes:
     - name: quay-secret
       secret:
         secretName: quay-secret
-    - emptyDir: {}
-      name: varlibcontainers
+    - name: varlibcontainers
+      emptyDir: {}      
   workspaces:
     - mountPath: /workspace/source
       name: source
